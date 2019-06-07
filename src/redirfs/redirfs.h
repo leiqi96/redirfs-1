@@ -218,7 +218,7 @@ enum redirfs_rv {
 };
 
 typedef void *redirfs_filter;
-typedef void *redirfs_context;
+typedef void *redirfs_context;  //hold private data for filters
 typedef void *redirfs_path;
 typedef void *redirfs_root;
 
@@ -557,8 +557,9 @@ struct redirfs_op_type {
 };
 
 struct redirfs_args {
-	union redirfs_op_args args;
-	union redirfs_op_rv rv;
+	union redirfs_op_args args; //Contains arguments for the original file system operation
+	//This is a union of all types which can be be returned by the original filesystem operations
+	union redirfs_op_rv rv; 
 	struct redirfs_op_type type;
 };
 

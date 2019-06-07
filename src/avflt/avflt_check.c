@@ -176,7 +176,7 @@ static int avflt_wait_for_reply(struct avflt_event *event)
 		jiffies = MAX_SCHEDULE_TIMEOUT;
 
 	jiffies = wait_for_completion_interruptible_timeout(&event->wait,
-			jiffies);
+			jiffies);  //在等待，avflt_event_done可以唤醒该线程
 
 	if (jiffies < 0)
 		return (int)jiffies;

@@ -25,12 +25,13 @@
 
 static int avflt_should_check(struct file *file)
 {
-	if (avflt_is_stopped())
+	if (avflt_is_stopped())   //avflt_request_accept!=0 继续
 		return 0;
 
 	if (avflt_proc_allow(current->tgid))
 		return 0;
 
+	//从avflt_trusted_list寻找当前线程所属的进程是否在 允许列表里
 	if (avflt_trusted_allow(current->tgid))
 		return 0;
 	
@@ -203,7 +204,13 @@ int avflt_rfs_init(void)
 {
 	int err;
 	int rv;
+/*Each filter registered to the RedirFS framework is identified by a handle
+	
+This
+handle is returned by the rfs_register_filter function
 
+
+*/
 	avflt = redirfs_register_filter(&avflt_info);
 	if (IS_ERR(avflt)) {
 		rv = PTR_ERR(avflt);
