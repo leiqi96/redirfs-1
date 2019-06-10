@@ -104,7 +104,7 @@ static enum redirfs_rv avflt_eval_res(int rv, struct redirfs_args *args)
 {
 	if (rv < 0) {
 		args->rv.rv_int = rv;
-		return REDIRFS_STOP;
+		return  REDIRFS_STOP;
 	} 
 
 	if (rv == AVFLT_FILE_INFECTED) {
@@ -139,7 +139,7 @@ static enum redirfs_rv avflt_pre_open(redirfs_context context,
 {
 	struct file *file = args->args.f_open.file;
 
-	return avflt_check_file(file, AVFLT_EVENT_OPEN, args);
+	return  avflt_check_file(file, AVFLT_EVENT_OPEN, args);
 }
 
 static enum redirfs_rv avflt_post_release(redirfs_context context,

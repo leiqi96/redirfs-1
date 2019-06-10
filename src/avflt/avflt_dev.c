@@ -90,8 +90,8 @@ static ssize_t avflt_dev_read(struct file *file, char __user *buf,
 
 	if (!(file->f_mode & FMODE_WRITE))
 		return -EINVAL;
-
-	event = avflt_get_request();
+ 
+	event = avflt_get_request();  //event->id + 1
 	if (!event)
 		return 0;
 
@@ -107,7 +107,7 @@ static ssize_t avflt_dev_read(struct file *file, char __user *buf,
 	if (rv)
 		goto error;
 
-	avflt_install_fd(event);
+	avflt_install_fd(event);  //avtest将fd与file结构挂钩
 	avflt_event_put(event);
 	return len;
 error:
@@ -135,9 +135,10 @@ static unsigned int avflt_poll(struct file *file, poll_table *wait)
 {
 	unsigned int mask;
 
-	poll_wait(file, &avflt_request_available, wait);
-
-	mask = POLLOUT | POLLWRNORM;
+	poll_wait(file, &avflt_request_available, wait);  //avtest，调用select时会阻塞在这等待队列上
+    //当avflt有事件来临时，通过avflt_add_request()调用wake_up_interruptible(&avflt_request_available);
+    //唤醒该等待队列上的进程
+	mask = POLLOUT | POLLWRNORM;    
 
 	if (!avflt_request_empty())
 		mask |= POLLIN | POLLRDNORM;

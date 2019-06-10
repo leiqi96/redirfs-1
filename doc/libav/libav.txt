@@ -179,7 +179,8 @@ av_register					av_register_trusted
 while (!exit) {					while (!exit) {
 	av_request
 				copy fd(cmgs)
-	send fd for scanning	--------------->	scan fd
+	send fd for scanning	--------------->	scan fd    		
+	  							process2对文件是只读的，收到event后，扫描fd代表的文件，把结果给process1
 				send scan result
 	wait for result		<---------------	send scan result
 

@@ -24,9 +24,9 @@ struct av_connection {
 };
 
 struct av_event {
-	int id;
-	int type;
-	int fd;
+	int id;   //由avflt设置，app不允许修改
+	int type; //区分 event类型
+	int fd;    
 	pid_t pid;
 	pid_t tgid;
 	int res;

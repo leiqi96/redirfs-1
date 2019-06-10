@@ -97,8 +97,8 @@ void avflt_event_put(struct avflt_event *event)
 		return;
 
 	avflt_put_root_data(event->root_data);
-	mntput(event->mnt);
-	dput(event->dentry);
+	mntput(event->mnt); //将vfmount计数-1, 如果vfmount的计数>2，表示还有其它进程在使用vfmout结构，不能被卸载
+	dput(event->dentry); //将dentry计数-1，如果递减后为0，将dentry转移到dentry_unuesd 队列
 	kmem_cache_free(avflt_event_cache, event);
 }
 
@@ -230,14 +230,18 @@ int avflt_process_request(struct file *file, int type)
 	struct avflt_event *event;
 	int rv = 0;
 
+	/*
+		分配事件，从原始的file里拿到dentry，vfsmount
+		然后avtest根据dentry和vfsmount建立自己的file，和fd，因为这些是进程私有的
+	*/
 	event = avflt_event_alloc(file, type);
 	if (IS_ERR(event))
 		return PTR_ERR(event);
 
-	if (avflt_add_request(event, 1))
+	if (avflt_add_request(event, 1))  //将event挂载到队列上，唤醒avtest
 		goto exit;
 
-	rv = avflt_wait_for_reply(event);
+	rv = avflt_wait_for_reply(event);  //，等待avtest返回处理结果
 	if (rv)
 		goto exit;
 
@@ -268,7 +272,7 @@ int avflt_get_file(struct avflt_event *event)
 	flags |= event->flags & O_LARGEFILE;
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,29)
-	file = dentry_open(dget(event->dentry), mntget(event->mnt), flags);
+	file = dentry_open(dget(event->dentry), mntget(event->mnt), flags); //建立file结构
 #else
 	file = dentry_open(dget(event->dentry), mntget(event->mnt), flags,
 			current_cred());
