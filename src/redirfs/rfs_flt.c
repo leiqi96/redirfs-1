@@ -143,7 +143,7 @@ redirfs_filter redirfs_register_filter(struct redirfs_filter_info *info)
 
 	rfs_mutex_unlock(&rfs_flt_list_mutex);
 
-	return (redirfs_filter)rflt;
+	return (redirfs_filter)rflt;   //强转成void
 }
 
 int redirfs_unregister_filter(redirfs_filter filter)

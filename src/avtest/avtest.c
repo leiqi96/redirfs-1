@@ -41,7 +41,12 @@ static int check(void)
 			return -1;
 		}
 
-		if (av_get_filename(&av_event, fn, PATH_MAX)) {
+		/*
+			因为avflt这个driver已经将fd与file挂钩，所以avtest可以通过fd获取带文件内容，
+			一般可不必通过 file的全路径 来 open()
+
+		*/
+		if (av_get_filename(&av_event, fn, PATH_MAX)) { 
 			perror("av_get_filename failed");
 			return -1;
 		}

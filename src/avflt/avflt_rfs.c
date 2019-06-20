@@ -134,6 +134,11 @@ static enum redirfs_rv avflt_check_file(struct file *file, int type,
 	return REDIRFS_CONTINUE;
 }
 
+
+/*
+	redirfs_context是一个filter的private data，
+*/
+
 static enum redirfs_rv avflt_pre_open(redirfs_context context,
 		struct redirfs_args *args)
 {
@@ -191,7 +196,7 @@ static struct redirfs_filter_info avflt_info = {
 	.name = "avflt",
 	.priority = 850000000,
 	.active = 1,
-	.ops = &avflt_ops
+	.ops = &avflt_ops   //用来 通过 sys接口  给redirfs下发配置
 };
 
 static struct redirfs_op_info avflt_op_info[] = {
