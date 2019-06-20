@@ -139,6 +139,12 @@ void chain_get_ops(struct chain *chain, char *ops)
 	if (!chain)
 		return;
 
+	/*
+		假如有2个filter，filter-1注册了	RFS_REG_FOP_OPEN(id为10）和RFS_REG_FOP_RELEASE(id为11）的Pre-call,
+						 filter-2注册了RFS_REG_FOP_RELEASE（id为11）的pre-call,
+		ops[10]++ 为1 ops[11]++ 为2
+	*/
+
 	for (i = 0; i < chain->c_flts_nr; i++) {
 		for (j = 0; j < RFS_OP_END; j++) {
 			if (chain->c_flts[i]->f_pre_cbs[j])

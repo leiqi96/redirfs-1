@@ -154,7 +154,7 @@ int avflt_rfs_init(void)
 	err = rfs_register_filter(&avflt, &avflt_info);
 	if (err)
 		return err;
-
+ 
 	spin_lock(&avflt_rops_lock);
 	err = avflt_rfs_set_ops();
 	spin_unlock(&avflt_rops_lock);

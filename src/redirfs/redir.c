@@ -357,24 +357,24 @@ int rfs_set_ops(struct dentry *dentry, struct rpath *path)
 	struct rfile *rfile;
 	struct ops *ops;
 
-	rdentry = rdentry_find(dentry);
+	rdentry = rdentry_find(dentry);  //dentry找到对应的rdentry
 	rinode = rdentry->rd_rinode;
 
 	ops = path->p_ops_local;
-	rdentry_set_ops(rdentry, ops);
+	rdentry_set_ops(rdentry, ops);   //根据ops->o_ops[op_id]里的内容来设置redirfs的替换函数，比如rfs_open()
 
 	spin_lock(&rdentry->rd_lock);
 	ops_put(rdentry->rd_ops);
 	rdentry->rd_ops = ops_get(ops);
 
 	list_for_each_entry(rfile, &rdentry->rd_rfiles, rf_rdentry_list) {
-		rfile_set_ops(rfile, ops);
+		rfile_set_ops(rfile, ops);    //设置rfile的hook
 	}
 
 	spin_unlock(&rdentry->rd_lock);
 
 	if (rinode)
-		rinode_set_ops(rinode, ops);
+		rinode_set_ops(rinode, ops);   //设置rinode的hook
 
 	rdentry_put(rdentry);
 

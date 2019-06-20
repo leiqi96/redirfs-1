@@ -809,6 +809,10 @@ void rdentry_set_ops(struct rdentry *rdentry, struct ops *ops)
 
 	mode = rdentry->rd_rinode->ri_inode->i_mode;
 
+	/*
+		根据文件类别（是目录，还是普通文件）来设置相应新的ops
+	*/
+	
 	if (S_ISREG(mode))
 		rdentry_set_reg_ops(rdentry, ops->o_ops);
 

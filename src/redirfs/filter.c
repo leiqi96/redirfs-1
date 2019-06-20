@@ -97,7 +97,7 @@ int rfs_register_filter(void **filter, struct rfs_filter_info *filter_info)
 	if (!filter || !filter_info)
 		return -EINVAL;
 
-	flt = flt_alloc(filter_info);
+	flt = flt_alloc(filter_info);  //初始化一个struct filter，并设置kobject kset
 	if (IS_ERR(flt))
 		return PTR_ERR(flt);
 
@@ -203,6 +203,7 @@ int rfs_deactivate_filter(rfs_filter filter)
 
 int rfs_set_operations(void *filter, struct rfs_op_info ops_info[])
 {
+	//struct filter结构是redirfs用来表示一个filter的
 	struct filter *flt = (struct filter *)filter;
 	int i = 0;
 	int retv;
@@ -210,7 +211,8 @@ int rfs_set_operations(void *filter, struct rfs_op_info ops_info[])
 	if (!flt)
 		return -EINVAL;
 
-	while (ops_info[i].op_id != RFS_OP_END) {
+	//填充filter的两个callback数组
+	while (ops_info[i].op_id != RFS_OP_END) { //RFS_OP_END是最后一个op
 		flt->f_pre_cbs[ops_info[i].op_id] = ops_info[i].pre_cb;
 		flt->f_post_cbs[ops_info[i].op_id] = ops_info[i].post_cb;
 		i++;
@@ -648,19 +650,26 @@ int flt_set_ops_cb(struct rpath *path, void *data)
 
 	flt = (struct filter *)data;
 
+	/*
+		chain里保存了filter 链
+	*/
+
+	//如果p_inchain_local里找到对应的filter
 	if (chain_find_flt(path->p_inchain_local, flt) != -1) {
 		ops = ops_alloc();
 		if (IS_ERR(ops))
 			return PTR_ERR(ops);
+		//ops->o_ops是一个指向char数组的指针
 		chain_get_ops(path->p_inchain_local, ops->o_ops);
 		ops_put(path->p_ops_local);
 		path->p_ops_local = ops;
 
-		err = rfs_set_ops(path->p_dentry, path);
+		err = rfs_set_ops(path->p_dentry, path);  //设置rdentry rinode rfile的hook
 		if (err)
 			return err;
 	}
 
+	//如果p_inchain里找到对应的filter
 	if (chain_find_flt(path->p_inchain, flt) != -1) {
 		ops = ops_alloc();
 		if (IS_ERR(ops))
@@ -669,7 +678,7 @@ int flt_set_ops_cb(struct rpath *path, void *data)
 		ops_put(path->p_ops);
 		path->p_ops = ops;
 
-		return rfs_walk_dcache(path->p_dentry, rfs_set_ops_cb, path, NULL, NULL);
+		return rfs_walk_dcache(path->p_dentry, rfs_set_ops_cb, path, NULL, NULL);//这个暂时还不知道什么意思
 	}
 
 	return 0;
