@@ -190,7 +190,7 @@ struct rpath *path_add(const char *path_name)
 	if (path) 
 		return path;
 
-	path = path_alloc(path_name);
+	path = path_alloc(path_name);//根据path_name来填充rpath path这个结构
 
 	if (IS_ERR(path))
 		return path;
@@ -217,7 +217,7 @@ struct rpath *path_add(const char *path_name)
 	}
 
 	path->p_parent = path_get(parent);
-	list_add(&path->p_sibpath, head);
+	list_add(&path->p_sibpath, head);   //在这里将path加入path_list链表
 
 	path_get(path);
 	path_put(parent);
@@ -274,6 +274,10 @@ int rfs_path_walk(struct rpath *path, int walkcb(struct rpath*, void*), void *da
 			return stop;
 	}
 
+	/*
+		如果rpath为null，但是path_list已经有被hook的目录了
+
+	*/
 	while (act != end) {
 		loop = list_entry(act, struct rpath, p_sibpath);
 		stop = walkcb(loop, datacb);
@@ -349,6 +353,9 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 	path = path_find(path_name, 0);
 	parent = path_find(path_name, 1);
 
+	/*
+		将filter放到rpath里
+	*/
 	if (path) {
 		if (path_info->flags & RFS_PATH_SINGLE) {
 			if (!(path->p_flags & RFS_PATH_SINGLE)) {
@@ -408,6 +415,7 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 		}
 	}
 
+	//path在path_list这个链表里找不到
 	if (!path) {
 		path = path_add(path_name);
 		if (IS_ERR(path)) {
@@ -452,6 +460,10 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 	else 
 		if (path_info->flags & RFS_PATH_INCLUDE)
 			retv = rfs_path_walk(path, flt_add_cb, flt);
+			/*
+				如果设置include 某个path，就将该filter加入到rpath里的rpatch->in_chain
+				如果设置exclude 某个path，                           		 rpath->ex_chain(由下面的代码完成)
+			*/
 		else
 			retv = rfs_path_walk(path, flt_rem_cb, flt);
 

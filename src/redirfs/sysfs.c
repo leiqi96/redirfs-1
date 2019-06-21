@@ -55,6 +55,7 @@ static ssize_t rfs_paths_show(rfs_filter filter, struct rfs_flt_attribute *attr,
 	return path_flt_info(flt, buf, PAGE_SIZE);
 }
 
+//设置被hook的path
 static ssize_t rfs_paths_store(rfs_filter filter, struct rfs_flt_attribute *attr, const char *buf, size_t size)
 {
 	struct filter *flt = (struct filter *)filter;

@@ -323,7 +323,7 @@ int rfs_unregister_attribute(rfs_filter filter, struct rfs_flt_attribute *attr);
 int rfs_get_kobject(rfs_filter filter, struct kobject **kobj);
 
 #define rfs_flt_attr(__name, __mode, __show, __store) 		\
-struct rfs_flt_attribute rfs_flt_attr_##__name = { 		\
+struct rfs_flt_attribute rfs_flt_attr_##__name = { 		\  // ##是拼接字符串
 	.attr = { 						\
 		.name  = __stringify(__name), 			\
 		.mode  = __mode, 				\

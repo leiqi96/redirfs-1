@@ -47,7 +47,7 @@ int rfs_precall_flts(struct chain *chain, struct context *context, struct rfs_ar
 		if (!atomic_read(&chain->c_flts[i]->f_active))
 			continue;
 
-		ops = chain->c_flts[i]->f_pre_cbs;
+		ops = chain->c_flts[i]->f_pre_cbs;  //某个filter注册上来的具体的callback
 		op = ops[args->type.id];
 		if (op) {
 			retv = op(context, args);
