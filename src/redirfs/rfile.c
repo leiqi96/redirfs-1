@@ -55,7 +55,7 @@ static struct rfile *rfile_alloc(struct file *file)
 
 	rinode_put(rinode);
 
-	rfile->rf_op_new.open = rfs_open;
+	rfile->rf_op_new.open = rfs_open; //这里是做替换
 
 	spin_lock_irqsave(&rfile_cnt_lock, flags);
 	rfile_cnt++;
@@ -154,7 +154,7 @@ struct rfile *rfile_add(struct file *file)
 		rfile_new->rf_chain = chain_get(rdentry->rd_chain);
 		rfile_new->rf_path = path_get(rdentry->rd_path);
 
-		rcu_assign_pointer(file->f_op, &rfile_new->rf_op_new);
+		rcu_assign_pointer(file->f_op, &rfile_new->rf_op_new); //这里做替换
 		rfile_get(rfile_new);
 
 		list_add_tail(&rfile_new->rf_rdentry_list, &rdentry->rd_rfiles);

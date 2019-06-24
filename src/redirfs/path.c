@@ -324,7 +324,7 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 	if (!(path_info->flags & (RFS_PATH_INCLUDE | RFS_PATH_EXCLUDE)))
 		return -EINVAL;
 
-	if (path_lookup(path_info->path, LOOKUP_FOLLOW, &nd))
+	if (path_lookup(path_info->path, LOOKUP_FOLLOW, &nd)) //通过path搜索 dentry inode
 		return -ENOENT;
 
 	if (path_info->flags & RFS_PATH_SUBTREE) {
@@ -342,7 +342,7 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 	if (!path_name)
 		return -ENOMEM;
 	
-	retv = path_normalize(path_info->path, path_name, path_len);
+	retv = path_normalize(path_info->path, path_name, path_len); //将path的路径名规范化
 	if (retv) {
 		kfree(path_name);
 		return retv;
@@ -350,11 +350,11 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 
 	mutex_lock(&path_list_mutex);
 
-	path = path_find(path_name, 0);
+	path = path_find(path_name, 0);  //根据path路径名 到path_list里去找path
 	parent = path_find(path_name, 1);
 
 	/*
-		将filter放到rpath里
+		找到了，就将filter放到rpath里
 	*/
 	if (path) {
 		if (path_info->flags & RFS_PATH_SINGLE) {
@@ -406,6 +406,13 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 
 	if (!path && parent) {
 		if (path_info->flags & RFS_PATH_INCLUDE) {
+			/*
+				parent /home   如果avflt hook 了/home
+					那么在/home里找到avflt
+
+				avflt也想hook,/home/wu，name parent /home这个rpath里的计数+1
+
+			*/
 			if (chain_find_flt(parent->p_inchain, flt) != -1)
 				path = path_get(parent);
 
@@ -417,7 +424,7 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 
 	//path在path_list这个链表里找不到
 	if (!path) {
-		path = path_add(path_name);
+		path = path_add(path_name); //新建rpath。并将path挂到path_list链表里
 		if (IS_ERR(path)) {
 			retv = PTR_ERR(path);
 			goto exit;

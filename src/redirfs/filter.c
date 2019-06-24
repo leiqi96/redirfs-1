@@ -292,13 +292,13 @@ int flt_add_local(struct rpath *path, struct filter *flt)
 		ops = ops_alloc();
 		if (IS_ERR(ops))
 			return PTR_ERR(ops);
-
-		chain_get_ops(path_go->p_inchain_local, ops->o_ops);
+		//用ops->ops来计数，看看rpath里有多少个filter 注册了那些callback
+		chain_get_ops(path_go->p_inchain_local, ops->o_ops); 
 		ops_put(path_go->p_ops_local);
 		path_go->p_ops_local = ops;
 	}
 
-	retv = rfs_replace_ops(path, path_go, NULL);
+	retv = rfs_replace_ops(path, path_go, NULL);  //真正替换file op 的地方
 
 	if (retv)
 		return retv;

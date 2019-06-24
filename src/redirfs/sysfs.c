@@ -76,7 +76,7 @@ static ssize_t rfs_paths_store(rfs_filter filter, struct rfs_flt_attribute *attr
 	ctl.data.path_info.flags = incl ? RFS_PATH_INCLUDE : RFS_PATH_EXCLUDE;
 	ctl.data.path_info.flags |= subtree ? RFS_PATH_SUBTREE : RFS_PATH_SINGLE;
 
-	if ((rv = flt->f_ctl_cb(&ctl)))
+	if ((rv = flt->f_ctl_cb(&ctl)))  //rfs_ctl ctl里包含要设置hooked path
 		return rv;
 
 	return size;

@@ -360,7 +360,7 @@ int rfs_set_ops(struct dentry *dentry, struct rpath *path)
 	rdentry = rdentry_find(dentry);  //dentry找到对应的rdentry
 	rinode = rdentry->rd_rinode;
 
-	ops = path->p_ops_local;
+	ops = path->p_ops_local;  //一个是p_ops_local
 	rdentry_set_ops(rdentry, ops);   //根据ops->o_ops[op_id]里的内容来设置redirfs的替换函数，比如rfs_open()
 
 	spin_lock(&rdentry->rd_lock);
@@ -424,7 +424,7 @@ int rfs_set_ops_cb(struct dentry *dentry, void *data)
 	rdentry->rd_ops = ops_get(path->p_ops);
 	spin_unlock(&rdentry->rd_lock);
 
-	rdentry_set_ops(rdentry, path->p_ops);
+	rdentry_set_ops(rdentry, path->p_ops); //另一个是p_ops
 
 	if (rinode) {
 		spin_lock(&rinode->ri_lock);
