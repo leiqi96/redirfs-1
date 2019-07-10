@@ -137,7 +137,7 @@ int rfs_replace_ops(struct rpath *path_old, struct rpath *path_new, struct filte
 	struct chain *chain;
 	struct ops *ops;
 
-	rdentry = rdentry_add(path_old->p_dentry);
+	rdentry = rdentry_add(path_old->p_dentry);  //根据dentry生成rdentry
 	if (IS_ERR(rdentry))
 		return PTR_ERR(rdentry);
 
@@ -453,6 +453,7 @@ struct entry {
 	struct dentry *e_dentry;
 };
 
+//遍历d_cache
 int rfs_walk_dcache(struct dentry *root,
 		    int (*dcb)(struct dentry *dentry, void *dentry_data),
 		    void *dcb_data,

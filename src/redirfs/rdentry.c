@@ -38,7 +38,7 @@ struct rdentry *rdentry_alloc(struct dentry* dentry)
 		memset(&rdentry->rd_op_new, 0, 
 				sizeof(struct dentry_operations));
 
-	rdentry->rd_op_new.d_iput = rfs_d_iput;
+	rdentry->rd_op_new.d_iput = rfs_d_iput;  //生成 rdentry->new_op
 
 	spin_lock_irqsave(&rdentry_cnt_lock, flags);
 	rdentry_cnt++;
@@ -136,12 +136,13 @@ struct rdentry *rdentry_add(struct dentry *dentry)
 	spin_lock(&dentry->d_lock);
 
 	rdentry = rdentry_find(dentry);
-
+	//如果dentry里的op没有被rdentry的new_op替换，执行else
 	if (rdentry) {
 		rdentry_put(rdentry_new);
 		rdentry_new = NULL;
 
 	} else {
+		//else里会替换dentry里的op
 		rcu_assign_pointer(dentry->d_op, &rdentry_new->rd_op_new);
 		rdentry = rdentry_get(rdentry_new);
 	}

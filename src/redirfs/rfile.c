@@ -247,7 +247,7 @@ int rfs_open(struct inode *inode, struct file *file)
 	else 
 		args.type.id = RFS_SOCK_FOP_OPEN;
 
-	if (!rfs_precall_flts(chain, NULL, &args, &cnt)) {
+	if (!rfs_precall_flts(chain, NULL, &args, &cnt)) {   //执行各filter的callback
 		if (rinode->ri_fop_old && rinode->ri_fop_old->open)
 			rv = rinode->ri_fop_old->open(args.args.f_open.inode, args.args.f_open.file);
 

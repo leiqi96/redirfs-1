@@ -280,7 +280,7 @@ int rfs_path_walk(struct rpath *path, int walkcb(struct rpath*, void*), void *da
 	*/
 	while (act != end) {
 		loop = list_entry(act, struct rpath, p_sibpath);
-		stop = walkcb(loop, datacb);
+		stop = walkcb(loop, datacb); //flt_set_ops_cb()
 
 		if (stop)
 			return stop;
@@ -424,6 +424,7 @@ int rfs_set_path(rfs_filter filter, struct rfs_path_info *path_info)
 
 	//path在path_list这个链表里找不到
 	if (!path) {
+		//rpath里带了dentry
 		path = path_add(path_name); //新建rpath。并将path挂到path_list链表里
 		if (IS_ERR(path)) {
 			retv = PTR_ERR(path);
